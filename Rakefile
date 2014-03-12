@@ -30,7 +30,8 @@ namespace :style do
   require 'foodcritic'
   desc 'Run Chef style checks'
   FoodCritic::Rake::LintTask.new(:chef) { |task| 
-    task.options = { fail_tags: ['any'] }
+    # not running all tags for https://github.com/acrmp/foodcritic/issues/189
+    task.options = { tags: ['~FC009'] }
   }
 end
 
