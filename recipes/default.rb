@@ -33,7 +33,6 @@ end
 unless package_name.nil?
   package package_name do
     action :install
-    only_if { package_name }
   end
 end
 
