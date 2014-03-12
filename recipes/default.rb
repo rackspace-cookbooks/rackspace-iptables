@@ -18,25 +18,22 @@
 
 case node['platform_family']
 when 'debian'
-
   package 'ufw' do
     action :remove
   end
-
   package_name = 'iptables-persistent'
   service_name = 'iptables-persistent'
   rules_file = '/etc/iptables/rules.v4'
-
 when 'rhel'
-
+  package_name = nil
   service_name = 'iptables'
   rules_file = '/etc/sysconfig/iptables'
-
 end
 
-package package_name do
-  action :install
-  only_if { package_name }
+unless package_name.nil?
+  package package_name do
+    action :install
+  end
 end
 
 template rules_file do
