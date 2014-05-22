@@ -26,6 +26,7 @@ module RackspaceIptables
     end
 
     def search_add_iptables_rules(search_str, chain, rules_to_add, weight = 50, comment = search_str)
+      search_str = search_str << " AND -name:#{node.name}"
       if !Chef::Config['solo']
         rules = {}
         nodes = search('node', search_str) || []
