@@ -29,23 +29,28 @@ module RackspaceIptables
       search_str = search_str << " AND -name:#{node.name}"
       if !Chef::Config['solo']
         rules = {}
+        server_ips = []
         nodes = search('node', search_str) || []
         nodes.map! do |member|
-          server_ip = begin
-            if member.attribute?('cloud')
-              if node.attribute?('cloud') && (member['cloud']['provider'] == node['cloud']['provider'])
-                member['cloud']['local_ipv4']
-              else
-                member['cloud']['public_ipv4']
+          if member.attribute?('cloud')
+            if member['cloud']['provider'] == ('rackspace' || 'openstack')
+              if member['cloud'].attribute?('local_ipv4')
+                server_ips.push(member['cloud']['local_ipv4']) unless member['cloud']['local_ipv4'].nil?
+              elsif member['cloud'].attribute?('public_ipv4')
+                server_ips.push(member['cloud']['public_ipv4']) unless member['cloud']['public_ipv4'].nil?
               end
-            else
-              member['ipaddress']
+            end
+          elsif
+            if member.attribute?('ipaddress')
+              server_ips.push(member['ipaddress']) unless member['ipaddress'].nil?
             end
           end
           # when passing a single rule, user may use a string instead of an array
           rules_to_add = [rules_to_add] if rules_to_add.class == String
           rules_to_add.each do |rule|
-            rules["-s #{server_ip}/32 " << rule] = { comment: comment, weight: weight }
+            server_ips.each do |server_ip|
+              rules["-s #{server_ip}/32 " << rule] = { comment: comment, weight: weight }
+            end
           end
         end
         rules.each { |rule, val| node.default['rackspace_iptables']['config']['chains'][chain][rule] = val }
