@@ -89,7 +89,7 @@ If you want to add multiple rules for each node returned in a search, you may pa
 
 This avoids searching the Chef server an unnecessary number of times.
 
-**You will need to ensure that the searces are run before rackspace_iptables::default is called in the run list or your rules will not get added, one way to do this is to use chef-sugar's compile_time function to wrap the search_add_iptables_rules funciton**
+**You will need to ensure that the searches are run before rackspace_iptables::default is called in the run list or your rules will not get added, one way to do this is to use chef-sugar's compile_time function to wrap the search_add_iptables_rules funciton**
 
 ---
 Please read the `add_iptables_rule` and `search_add_iptables_rules` functions in `libraries/helpers.rb` to determine if they satisfy your use case. If not, you can manually define your rules.
