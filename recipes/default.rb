@@ -18,6 +18,7 @@
 
 case node['platform_family']
 when 'debian'
+  include_recipe 'apt::default'
   package 'ufw' do
     action :remove
   end
@@ -36,7 +37,13 @@ unless package_name.nil?
   end
 end
 
-template rules_file do
+log 'run the iptables template last' do
+  level :debug
+  notifies :create, 'template[rules_file]', :delayed
+end
+
+template 'rules_file' do
+  path rules_file
   cookbook node['rackspace_iptables']['templates_cookbook']['rules']
   source 'iptables.rules.erb'
   owner 'root'
