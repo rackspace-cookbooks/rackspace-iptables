@@ -36,6 +36,11 @@ unless package_name.nil?
   end
 end
 
+log "run the iptables template last" do
+    level :debug
+    notifies :create, "template[rules_file]", :delayed
+end
+
 template rules_file do
   cookbook node['rackspace_iptables']['templates_cookbook']['rules']
   source 'iptables.rules.erb'
