@@ -27,15 +27,18 @@ when 'debian'
   rules_file = '/etc/iptables/rules.v4'
 when 'rhel'
   package_name = nil
+  package_name = 'iptables-services' if node['init_package'] == 'systemd'
   service_name = 'iptables'
   rules_file = '/etc/sysconfig/iptables'
 end
 
-unless package_name.nil?
-  package package_name do
-    action :install
-  end
+service 'firewalld' do
+  action %w(disable stop)
+  provider Chef::Provider::Service::Systemd
+  only_if { node['init_package'] == 'systemd' }
 end
+
+package package_name unless package_name.nil?
 
 log 'run the iptables template last' do
   level :debug
@@ -63,6 +66,7 @@ end
 
 service service_name do
   supports status: true, restart: true
+  provider Chef::Provider::Service::Systemd if node['init_package'] == 'systemd'
   status_command "iptables -L | egrep -v '^(Chain|target|$)'" if node['platform_family'] == 'debian'
   action :start
 end
