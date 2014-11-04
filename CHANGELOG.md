@@ -2,6 +2,10 @@ rackspace_iptables cookbook CHANGELOG
 ======================
 This file is used to list changes made in each version of the rackspace_iptables cookbook.
 
+v1.5.0
+------
+- Change search_add_iptables_rules syntax to make it chef-zero compatible
+
 v1.3.1
 ------
 - Fix the ordering issue in runlists
