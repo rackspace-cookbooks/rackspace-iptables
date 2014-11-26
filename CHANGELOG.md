@@ -2,6 +2,10 @@ rackspace_iptables cookbook CHANGELOG
 ======================
 This file is used to list changes made in each version of the rackspace_iptables cookbook.
 
+v1.7.1
+------
+- Version bump for dev. Record all changes here.
+
 v1.7.0
 ------
 - Release to get us back in sync from v1.6.0.
