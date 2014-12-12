@@ -44,7 +44,7 @@ module RackspaceIptables
 
       rules = {}
       nodes.each do |member|
-        server_ip = Chef::Sugar::IP.best_ip_for(current_node, member)
+        server_ip = Chef::Sugar::IP.best_ip_for(node, member)
 
         unless member && server_ip
           Chef::Log.warn("Could not determine a valid ip for #{member}, skipping search_add_iptables_rules for this node")

@@ -4,7 +4,7 @@ This file is used to list changes made in each version of the rackspace_iptables
 
 v1.7.1
 ------
-- Version bump for dev. Record all changes here.
+- Emergency fix, typo node/current_node.
 
 v1.7.0
 ------
