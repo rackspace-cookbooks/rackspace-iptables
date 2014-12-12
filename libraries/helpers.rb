@@ -39,7 +39,7 @@ module RackspaceIptables
       end
     end
 
-    def self.convert_nodes_to_rules(nodes, rules_to_add, weight, comment)
+    def convert_nodes_to_rules(nodes, rules_to_add, weight, comment)
       require 'chef/sugar'
 
       rules = {}
@@ -59,20 +59,6 @@ module RackspaceIptables
       end
 
       rules
-    end
-
-    # allow us to inject a node when this is run outside a chef run_context
-    # - this is not really a trivial accessor b/c it's called externally for tests
-    def self.mock_current_node(value) # rubocop:disable TrivialAccessors
-      @mock_current_node = value
-    end
-
-    # look for the built-in node object from chef, or fall back to @node member
-    # for testing scenarios with dummy node data
-    def self.current_node
-      node
-    rescue
-      @mock_current_node
     end
   end
 end
