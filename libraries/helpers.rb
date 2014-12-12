@@ -61,19 +61,18 @@ module RackspaceIptables
       rules
     end
 
+    # allow us to inject a node when this is run outside a chef run_context
+    # - this is not really a trivial accessor b/c it's called externally for tests
+    def self.mock_current_node(value) # rubocop:disable TrivialAccessors
+      @mock_current_node = value
+    end
+
     # look for the built-in node object from chef, or fall back to @node member
     # for testing scenarios with dummy node data
     def self.current_node
-      begin
-        node
-      rescue
-        @node
-      end
-    end
-
-    # allow us to inject a node when this is run outside a chef run_context
-    def Helpers.inject_node(n)
-      @node = n
+      node
+    rescue
+      @mock_current_node
     end
   end
 end
