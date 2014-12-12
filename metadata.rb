@@ -1,5 +1,5 @@
 name             'rackspace_iptables'
-maintainer       'Rackspace, US Inc.'
+maintainer       'Rackspace'
 maintainer_email 'rackspace-cookbooks@rackspace.com'
 license          'Apache 2.0'
 description      'Installs/Configures rackspace_iptables'
@@ -12,3 +12,6 @@ supports 'rhel'
 supports 'ubuntu'
 
 depends 'apt'
+depends 'yum'
+
+depends 'chef-sugar'

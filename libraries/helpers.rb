@@ -21,37 +21,59 @@ module RackspaceIptables
   module Helpers
     # find servers to/from which to configure access
     def add_iptables_rule(chain, rule, weight = 50, comment = nil)
-      node.default['rackspace_iptables']['config']['chains'][chain][rule]['weight'] = weight
-      node.default['rackspace_iptables']['config']['chains'][chain][rule]['comment'] = comment if comment
+      rule_node = node.default['rackspace_iptables']['config']['chains'][chain][rule]
+
+      rule_node['weight'] = weight
+      rule_node['comment'] = comment if comment
     end
 
-    def search_add_iptables_rules(search_str, chain, rules_to_add, weight = 50, comment = search_str)
-      search_str = search_str << " AND NOT name:#{node.name}"
-      if !Chef::Config['solo']
-        rules = {}
-        nodes = search('node', search_str) || []
-        nodes.map! do |member|
-          server_ip = begin
-            if member.attribute?('cloud')
-              if node.attribute?('cloud') && (member['cloud']['provider'] == node['cloud']['provider'])
-                member['cloud']['local_ipv4']
-              else
-                member['cloud']['public_ipv4']
-              end
-            else
-              member['ipaddress']
-            end
-          end
-          # when passing a single rule, user may use a string instead of an array
-          rules_to_add = [rules_to_add] if rules_to_add.class == String
-          rules_to_add.each do |rule|
-            rules["-s #{server_ip}/32 " << rule] = { comment: comment, weight: weight }
-          end
-        end
-        rules.each { |rule, val| node.default['rackspace_iptables']['config']['chains'][chain][rule] = val }
-      else
+    def search_add_iptables_rules(search_str, chain, rules_to_add, weight = 50, comment = search_str) # rubocop:disable Metrics/AbcSize
+      if Chef::Config['solo']
         Chef::Log.warn 'Running Chef Solo; doing nothing for function call to add_rules_for_nodes'
+      else
+        search_str = search_str << " AND NOT name:#{node.name}"
+        nodes = search('node', search_str) || []
+
+        rules = convert_nodes_to_rules(nodes, rules_to_add, weight, comment)
+        rules.each { |rule, val| node.default['rackspace_iptables']['config']['chains'][chain][rule] = val }
       end
+    end
+
+    def self.convert_nodes_to_rules(nodes, rules_to_add, weight, comment)
+      require 'chef/sugar'
+
+      rules = {}
+      nodes.each do |member|
+        server_ip = Chef::Sugar::IP.best_ip_for(current_node, member)
+
+        unless member && server_ip
+          Chef::Log.warn("Could not determine a valid ip for #{member}, skipping search_add_iptables_rules for this node")
+          next
+        end
+
+        # when passing a single rule, user may use a string instead of an array
+        rules_to_add = [rules_to_add] if rules_to_add.class == String
+        rules_to_add.each do |rule|
+          rules["-s #{server_ip}/32 " << rule] = { comment: comment, weight: weight }
+        end
+      end
+
+      rules
+    end
+
+    # look for the built-in node object from chef, or fall back to @node member
+    # for testing scenarios with dummy node data
+    def self.current_node
+      begin
+        node
+      rescue
+        @node
+      end
+    end
+
+    # allow us to inject a node when this is run outside a chef run_context
+    def Helpers.inject_node(n)
+      @node = n
     end
   end
 end

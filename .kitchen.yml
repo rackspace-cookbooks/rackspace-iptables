@@ -1,27 +1,58 @@
 ---
+################################################################################
+# Any local customizations should be placed inside the .kitchen.local.yml, which
+# will not be checked in or overwritten. You may also use ~/.kitchen/config.yml
+# or environment variables like VAGRANT_DEFAULT_PROVIDER. Anything in those will
+# take precedence over anything set in `.kitchen.yml`.
+################################################################################
 driver:
-  name: vagrant
-  require_chef_omnibus: '11.10.4'
+  name: vagrant # provide a default test-kitchen driver, vagrant
+
+driver_config:
+  require_chef_omnibus: true
+
+provisioner:
+  name: chef_zero
+  client_rb:
+    environment: _default
+  attributes:
+    openssh:
+      server:
+        password_authentication: 'yes'
+        permit_root_login: 'yes'
+    cloud:
+      public_ipv4: '127.0.0.1'
+    authorization:
+      sudo:
+        users: ['vagrant']
+        passwordless: true
+    platformstack:
+      cloud_backup:
+        enabled: false
+      cloud_monitoring:
+        enabled: false
+      omnibus_updater:
+        enabled: false
+      iptables:
+        allow_ssh_from_world: true
+    rackspace:
+      cloud_credentials:
+        username: 'racker'
+        api_key: 'sekrit'
 
 platforms:
-- name: ubuntu-12.04
-  driver_config:
-    image_id: '80fbcb55-b206-41f9-9bc2-2dd7aac6c061'
-    box: opscode-ubuntu-12.04
-    box_url: http://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/opscode_ubuntu-12.04_chef-provisionerless.box
-- name: centos-6.4
-  driver_config:
-    image_id: 'f70ed7c7-b42e-4d77-83d8-40fa29825b85'
-    box: opscode-centos-6.4
-    box_url: http://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/opscode_centos-6.4_chef-provisionerless.box
-- name: debian-7.2.0
-  driver_config:
-    image_id: '857d7d36-34f3-409f-8435-693e8797be8b'
-    box: opscode-debian-7.2.0
-    box_url: http://opscode-vm-bento.s3.amazonaws.com/vagrant/virtualbox/opscode_debian-7.2.0_chef-provisionerless.box
+  - name: ubuntu-14.04
+    run_list:
+    - recipe[apt]
+  - name: ubuntu-12.04
+    run_list:
+    - recipe[apt]
+  - name: centos-6.5
+    run_list:
+    - recipe[yum]
 
 suites:
-- name: default
-  run_list:
-  - recipe[rackspace_iptables_test]
-  attributes: {}
+  - name: default
+    run_list: recipe[rackspace_iptables_test]
+    attributes:
+      foo: 'bar'
