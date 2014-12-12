@@ -1,7 +1,6 @@
-require 'spec_helper'
+require_relative 'spec_helper'
 
 describe 'rackspace_iptables::default' do
-
   context 'Ubuntu 12.04' do
     let(:chef_run) do
       ChefSpec::Runner.new(platform: 'ubuntu', version: '12.04') do |node|
@@ -24,9 +23,8 @@ describe 'rackspace_iptables::default' do
     end
 
     it 'sets rules in the correct order' do
-      expect(chef_run).to render_file('/etc/iptables/rules.v4')
-                    .with_content('-A INPUT -s 127.0.0.1 -j DROP -m comment --comment "bar"
--A INPUT -s 127.0.0.1 -j ACCEPT')
+      expect(chef_run).to render_file('/etc/iptables/rules.v4').with_content('-A INPUT -s 127.0.0.1 -j DROP -m comment --comment "bar"')
+      expect(chef_run).to render_file('/etc/iptables/rules.v4').with_content('-A INPUT -s 127.0.0.1 -j ACCEPT')
     end
   end
 
@@ -53,7 +51,7 @@ describe 'rackspace_iptables::default' do
 
     it 'sets rules in the correct order' do
       expect(chef_run).to render_file('/etc/iptables/rules.v4')
-                    .with_content('-A INPUT -s 127.0.0.1 -j DROP -m comment --comment "bar"
+        .with_content('-A INPUT -s 127.0.0.1 -j DROP -m comment --comment "bar"
 -A INPUT -s 127.0.0.1 -j ACCEPT')
     end
   end
@@ -72,7 +70,7 @@ describe 'rackspace_iptables::default' do
 
     it 'sets rules in the correct order' do
       expect(chef_run).to render_file('/etc/sysconfig/iptables')
-                      .with_content('-A INPUT -s 127.0.0.1 -j DROP -m comment --comment "bar"
+        .with_content('-A INPUT -s 127.0.0.1 -j DROP -m comment --comment "bar"
 -A INPUT -s 127.0.0.1 -j ACCEPT')
     end
   end

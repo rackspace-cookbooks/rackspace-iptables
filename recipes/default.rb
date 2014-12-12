@@ -16,6 +16,8 @@
 # limitations under the License.
 #
 
+include_recipe 'chef-sugar'
+
 case node['platform_family']
 when 'debian'
   include_recipe 'apt::default'
@@ -45,7 +47,7 @@ log 'run the iptables template last' do
   notifies :create, 'template[rules_file]', :delayed
 end
 
-template 'rules_file' do
+template 'rules_file' do # ~FC009
   path rules_file
   cookbook node['rackspace_iptables']['templates_cookbook']['rules']
   source 'iptables.rules.erb'
@@ -61,6 +63,7 @@ template 'rules_file' do
       POSTROUTING: node['rackspace_iptables']['config']['chains']['POSTROUTING']
     }
   }
+
   notifies :restart, "service[#{service_name}]"
 end
 

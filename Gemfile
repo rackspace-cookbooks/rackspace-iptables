@@ -1,20 +1,38 @@
 source 'https://rubygems.org'
- 
-gem 'berkshelf',  '~> 2.0'
- 
-group :testing do
-  gem 'chefspec',   '~> 3.2'
+
+group :lint do
   gem 'foodcritic', '~> 3.0'
-  gem 'thor',       '~> 0.18'
-  gem 'chef',       '~> 11.10'
-  gem 'rspec',      '~> 2.14'
-  gem 'rubocop',    '~> 0.16' 
-  gem 'rake',       '~> 10.1'
+  gem 'foodcritic-rackspace-rules'
+  gem 'rubocop', '~> 0.24'
 end
- 
-group :integration do
-  gem 'test-kitchen', '~> 1.1'
-  gem 'kitchen-vagrant', '~> 0.14'
-  gem 'kitchen-rackspace', '>= 0.4.0'
-  gem 'serverspec', '~> 0.15.1'
+
+group :unit do
+  gem 'berkshelf', '~> 3'
+  gem 'chefspec'
+  gem 'chef-sugar'
+  gem 'rspec-expectations'
+end
+
+group :kitchen_common do
+  gem 'test-kitchen'
+end
+
+group :kitchen_vagrant do
+  gem 'kitchen-vagrant'
+  gem 'vagrant-wrapper'
+end
+
+group :kitchen_rackspace do
+  gem 'kitchen-rackspace'
+end
+
+group :development do
+  gem 'growl'
+  gem 'rb-fsevent'
+  gem 'guard'
+  gem 'guard-kitchen'
+  gem 'guard-foodcritic'
+  gem 'guard-rubocop'
+  gem 'fauxhai'
+  gem 'pry-nav'
 end
