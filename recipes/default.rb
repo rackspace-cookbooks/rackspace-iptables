@@ -26,6 +26,10 @@ when 'debian'
   end
   package_name = 'iptables-persistent'
   service_name = 'iptables-persistent'
+  if node['platform_version'].to_f >= 14.10
+    service_name = 'netfilter-persistent'
+  end
+
   rules_file = '/etc/iptables/rules.v4'
 when 'rhel'
   package_name = nil
