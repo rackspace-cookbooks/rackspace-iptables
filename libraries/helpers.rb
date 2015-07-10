@@ -17,17 +17,73 @@
 # limitations under the License.
 #
 module RackspaceIptables
+  DEFAULT_WEIGHT = 50
+  DEFAULT_CHAINS = %w(FORWARD INPUT OUTPUT POSTROUTING PREROUTING)
+  DEFAULT_POLICY = 'ACCEPT [0:0]'
+
+  module TemplateHelpers
+    def render_chain_definitions(chains)
+      chain_definitions = []
+
+      chains.keys.sort.each do |chain|
+        if DEFAULT_CHAINS.include?(chain)
+          policy = chains[chain]['default'] || DEFAULT_POLICY
+        else
+          policy = '- [0:0]'
+        end
+
+        chain_definitions << ":#{chain} #{policy}"
+      end
+
+      chain_definitions.join("\n")
+    end
+
+    def render_table_rules(chains)
+      table_rules = []
+
+      chains.each_pair do |chain, rules|
+        # reverse sort by weight first, lexically second
+        sorted_rules = rules.sort_by do |k, v|
+          [v['weight'] || DEFAULT_WEIGHT, k]
+        end
+
+        sorted_rules.reverse_each do |rule, opts|
+          next if rule == 'default' # skip default policies
+
+          rule = ["-A #{chain} #{rule}"]
+          rule << %(-m comment --comment "#{opts['comment']}") if opts['comment']
+
+          table_rules << rule.join(' ')
+        end
+      end
+
+      table_rules.join("\n")
+    end
+
+    def render_table(name, chains)
+      return if chains.nil? || chains.empty?
+
+      table = ["*#{name}"]
+      table << render_chain_definitions(chains)
+      table << render_table_rules(chains)
+      table << 'COMMIT'
+      table << "\n"
+
+      table.join("\n")
+    end
+  end
+
   # convenience functions for building iptables rules in Rolebooks
   module Helpers
     # find servers to/from which to configure access
-    def add_iptables_rule(chain, rule, weight = 50, comment = nil)
-      rule_node = node.default['rackspace_iptables']['config']['chains'][chain][rule]
+    def add_iptables_rule(table, chain, rule, weight = DEFAULT_WEIGHT, comment = nil)
+      rule_node = node.default['rackspace_iptables']['v4'][table][chain][rule]
 
       rule_node['weight'] = weight
       rule_node['comment'] = comment if comment
     end
 
-    def search_add_iptables_rules(search_str, chain, rules_to_add, weight = 50, comment = search_str) # rubocop:disable Metrics/AbcSize
+    def search_add_iptables_rules(search_str, table, chain, rules_to_add, weight = DEFAULT_WEIGHT, comment = search_str) # rubocop:disable Metrics/AbcSize
       if Chef::Config['solo']
         Chef::Log.warn 'Running Chef Solo; doing nothing for function call to add_rules_for_nodes'
       else
@@ -35,7 +91,7 @@ module RackspaceIptables
         nodes = search('node', search_str) || []
 
         rules = convert_nodes_to_rules(nodes, rules_to_add, weight, comment)
-        rules.each { |rule, val| node.default['rackspace_iptables']['config']['chains'][chain][rule] = val }
+        rules.each { |rule, val| node.default['rackspace_iptables']['v4'][table][chain][rule] = val }
       end
     end
 
