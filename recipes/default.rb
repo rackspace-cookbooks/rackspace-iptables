@@ -58,13 +58,16 @@ template 'rules_file' do # ~FC009
   owner 'root'
   group 'root'
   mode '0600'
+  helpers ::RackspaceIptables::TemplateHelpers
   variables lazy {
     {
-      INPUT: node['rackspace_iptables']['config']['chains']['INPUT'],
-      OUTPUT: node['rackspace_iptables']['config']['chains']['OUTPUT'],
-      FORWARD: node['rackspace_iptables']['config']['chains']['FORWARD'],
-      PREROUTING: node['rackspace_iptables']['config']['chains']['PREROUTING'],
-      POSTROUTING: node['rackspace_iptables']['config']['chains']['POSTROUTING']
+      tables: {
+        filter:   node['rackspace_iptables']['v4']['filter'],
+        nat:      node['rackspace_iptables']['v4']['nat'],
+        mangle:   node['rackspace_iptables']['v4']['mangle'],
+        raw:      node['rackspace_iptables']['v4']['raw'],
+        security: node['rackspace_iptables']['v4']['security']
+      }
     }
   }
 

@@ -4,9 +4,9 @@ describe 'rackspace_iptables::default' do
   context 'Ubuntu 12.04' do
     let(:chef_run) do
       ChefSpec::Runner.new(platform: 'ubuntu', version: '12.04') do |node|
-        node.set['rackspace_iptables']['config']['chains']['INPUT']['-s 127.0.0.1 -j ACCEPT']['weight'] = -1
-        node.set['rackspace_iptables']['config']['chains']['INPUT']['-s 127.0.0.1 -j DROP']['weight'] = 1
-        node.set['rackspace_iptables']['config']['chains']['INPUT']['-s 127.0.0.1 -j DROP']['comment'] = 'bar'
+        node.set['rackspace_iptables']['v4']['filter']['INPUT']['-s 127.0.0.1 -j ACCEPT']['weight'] = -1
+        node.set['rackspace_iptables']['v4']['filter']['INPUT']['-s 127.0.0.1 -j DROP']['weight'] = 1
+        node.set['rackspace_iptables']['v4']['filter']['INPUT']['-s 127.0.0.1 -j DROP']['comment'] = 'bar'
       end.converge(described_recipe)
     end
 
@@ -31,9 +31,9 @@ describe 'rackspace_iptables::default' do
   context 'Debian 7.2' do
     let(:chef_run) do
       ChefSpec::Runner.new(platform: 'debian', version: '7.2') do |node|
-        node.set['rackspace_iptables']['config']['chains']['INPUT']['-s 127.0.0.1 -j ACCEPT']['weight'] = -1
-        node.set['rackspace_iptables']['config']['chains']['INPUT']['-s 127.0.0.1 -j DROP']['weight'] = 1
-        node.set['rackspace_iptables']['config']['chains']['INPUT']['-s 127.0.0.1 -j DROP']['comment'] = 'bar'
+        node.set['rackspace_iptables']['v4']['filter']['INPUT']['-s 127.0.0.1 -j ACCEPT']['weight'] = -1
+        node.set['rackspace_iptables']['v4']['filter']['INPUT']['-s 127.0.0.1 -j DROP']['weight'] = 1
+        node.set['rackspace_iptables']['v4']['filter']['INPUT']['-s 127.0.0.1 -j DROP']['comment'] = 'bar'
       end.converge(described_recipe)
     end
 
@@ -58,9 +58,9 @@ describe 'rackspace_iptables::default' do
   context 'CentOS 6.4' do
     let(:chef_run) do
       ChefSpec::Runner.new(platform: 'centos', version: '6.4') do |node|
-        node.set['rackspace_iptables']['config']['chains']['INPUT']['-s 127.0.0.1 -j ACCEPT']['weight'] = -1
-        node.set['rackspace_iptables']['config']['chains']['INPUT']['-s 127.0.0.1 -j DROP']['weight'] = 1
-        node.set['rackspace_iptables']['config']['chains']['INPUT']['-s 127.0.0.1 -j DROP']['comment'] = 'bar'
+        node.set['rackspace_iptables']['v4']['filter']['INPUT']['-s 127.0.0.1 -j ACCEPT']['weight'] = -1
+        node.set['rackspace_iptables']['v4']['filter']['INPUT']['-s 127.0.0.1 -j DROP']['weight'] = 1
+        node.set['rackspace_iptables']['v4']['filter']['INPUT']['-s 127.0.0.1 -j DROP']['comment'] = 'bar'
       end.converge(described_recipe)
     end
 

@@ -17,8 +17,4 @@
 # limitations under the License.
 #
 default['rackspace_iptables']['templates_cookbook']['rules'] = 'rackspace_iptables'
-default['rackspace_iptables']['config']['chains']['INPUT'] = {}
-default['rackspace_iptables']['config']['chains']['OUTPUT'] = {}
-default['rackspace_iptables']['config']['chains']['FORWARD'] = {}
-default['rackspace_iptables']['config']['chains']['PREROUTING'] = {}
-default['rackspace_iptables']['config']['chains']['POSTROUTING'] = {}
+default['rackspace_iptables']['v4'] = {}
